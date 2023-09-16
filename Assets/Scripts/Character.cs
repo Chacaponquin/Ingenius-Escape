@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-enum CHARACTER_TYPE
+public enum CHARACTER_TYPE
 {
     AUTOMATICA,
     MECANICA,
@@ -13,22 +13,34 @@ enum CHARACTER_TYPE
     INDUSTRIAL
 }
 
-public class Character : MonoBehaviour
+public class Character: CellItem
 {
-    private GameObject gridCell;
-    private CHARACTER_TYPE type;
-    private bool isArrival;
+    public int id;
+    public Cell actualCell;
+    public CHARACTER_TYPE type;
 
-    // Start is called before the first frame update
-    void Start()
+    public bool canMove(Cell cell)
     {
-        this.isArrival = false;     
-    }
+        if (actualCell.isAdjacent(cell))
+        {
+            if (actualCell.isLand() && cell.type == CELL_TYPE.WATER)
+            {
+                return false;
+            }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+
+            if (cell.type == CELL_TYPE.WATER && cell.includeBoat())
+            {
+                List<Boat> allBoats = cell.availableBoats();
+                return !(allBoats.Count == 0);
+            }
+
+            return true;
+        }
+        else
+        {
+            return false;
+        }        
     }
 }
 

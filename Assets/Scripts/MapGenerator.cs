@@ -5,9 +5,9 @@ using UnityEngine;
 public class MapGenerator : MonoBehaviour
 {
     public int sizeGrid;
+    public int sizeBox;
     public List<List<Cell>> grid;
     public GameObject boxTest;
-    public int sizeBox;
 
     private const int ISLAND_SIZE = 3;
     private const int CENTER_ISLAND_SIZE = 4;
@@ -21,6 +21,20 @@ public class MapGenerator : MonoBehaviour
     {
         this.initGrid();
         this.createIsland();
+        this.createCenterIsland();
+    }
+
+    private void createIsland()
+    {
+        this.createTopLeftIsland();
+        this.createTopRightIsland();
+        this.createBottomLeftIsland();
+        this.createBottomRightIsland();
+
+        defineColorIsland(this.grid[1][1].gridCell);
+        defineColorIsland(this.grid[sizeGrid - 2][1].gridCell);
+        defineColorIsland(this.grid[1][sizeGrid - 2].gridCell);
+        defineColorIsland(this.grid[sizeGrid - 2][sizeGrid - 2].gridCell);
     }
 
     private void initGrid()
@@ -37,7 +51,7 @@ public class MapGenerator : MonoBehaviour
                 Vector3 position = new Vector3(startPositionX, startPositionY, 0f);
                 GameObject test = Instantiate(boxTest, position, Quaternion.identity);
 
-                Cell newCell = new Cell(test, CELL_TYPE.WATER);
+                Cell newCell = new Cell(test, CELL_TYPE.WATER, this);
 
                 newRow.Add(newCell);
 
@@ -48,21 +62,6 @@ public class MapGenerator : MonoBehaviour
 
             grid.Add(newRow);
         }
-    }
-
-    private void createIsland()
-    {
-        this.createTopLeftIsland();
-        this.createTopRightIsland();
-        this.createBottomLeftIsland();
-        this.createBottomRightIsland();
-
-        defineColorIsland(this.grid[1][1].gridCell);
-        defineColorIsland(this.grid[sizeGrid - 2][1].gridCell);
-        defineColorIsland(this.grid[1][sizeGrid - 2].gridCell);
-        defineColorIsland(this.grid[sizeGrid - 2][sizeGrid - 2].gridCell);
-
-        this.createCenterIsland();
     }
 
     public int GetCenterIndex()
@@ -179,5 +178,91 @@ public class MapGenerator : MonoBehaviour
             Cell cell = this.grid[i][0];
             this.defineColorIsland(cell.gridCell);
         }
+    }
+
+    public List<Cell> freeCellSands()
+    {
+        List<Cell> free = new List<Cell>();
+
+        foreach(List<Cell> cellRow in grid)
+        {
+            foreach(Cell cell in cellRow)
+            {
+                if(cell.type == CELL_TYPE.SAND)
+                {
+                    free.Add(cell);
+                }
+            }
+        }
+
+        return free;
+    }
+
+    public List<Cell> freeCellDirt()
+    {
+        List<Cell> free = new List<Cell>();
+
+        foreach (List<Cell> cellRow in grid)
+        {
+            foreach (Cell cell in cellRow)
+            {
+                if (cell.type == CELL_TYPE.DIRT)
+                {
+                    free.Add(cell);
+                }
+            }
+        }
+
+        return free;
+    }
+
+    public Cell getCell(int x, int y) {
+        try
+        {
+            return this.grid[x][y];
+        }
+         catch (System.Exception)
+        {
+            return null;
+        }
+     
+    }
+
+    public List<Cell> getCenterIsland()
+    {
+        List<Cell> cells = new List<Cell>();
+
+        foreach(List<Cell> cellRow in this.grid)
+        {
+            foreach(Cell c in cellRow) {
+                if (c.isLand())
+                {
+                    cells.Add(c);
+                }
+            }
+        }
+
+        return cells;
+    }
+
+    public (int, int) findCellCoords(Cell cell)
+    {
+        int x = -1;
+        int y = -1;
+
+        bool stop = false;
+
+        for(int i = 0; i < this.grid.Count && !stop; i++)
+        {
+            int found = this.grid[i].IndexOf(cell);
+            if(found != -1)
+            {
+                stop = true;
+                x = i;
+                y = found;
+            }
+        }
+
+        return (x, y);
     }
 }

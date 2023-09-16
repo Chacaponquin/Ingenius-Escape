@@ -6,20 +6,20 @@ public enum COLOR{
     RED,
     BLUE
 }
-public class Player : MonoBehaviour
+public class Player
 {
-    private string name;
-    private COLOR color;
-    private List<Character> characters;
-    // Start is called before the first frame update
-    void Start()
+    public string name;
+    public COLOR color;
+    public List<Character> characters = new List<Character>();
+    
+    public Player(string name, COLOR color)
     {
-        
+        this.name = name;
+        this.color = color;
     }
 
-    // Update is called once per frame
-    void Update()
+    public void setCharacter(Character c)
     {
-        
+        this.characters.Add(c);
     }
 }

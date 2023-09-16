@@ -19,7 +19,6 @@ public class B_Exit : MonoBehaviour
     }
     private void OnMouseDown()
     {
-        print("TETOCO SALIR");
         Exit();
     }
 }
