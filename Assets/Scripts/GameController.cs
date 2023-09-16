@@ -5,8 +5,16 @@ using UnityEngine;
 public class GameController : MonoBehaviour
 {
     private MapGenerator map;
-    private List<Player> players = new List<Player>();
-    private Player turnPlayer;
+    public List<Player> players = new List<Player>();
+    public List<Creature> creatures = new List<Creature>();
+
+    private int countMovements;
+
+    public Player turnPlayer;
+    public Character selectedCharacter;
+
+    public Cell selectedCell;
+
     private List<GameCamera> cameras;
     [SerializeField]
     private B_Select selectButton;
@@ -15,38 +23,28 @@ public class GameController : MonoBehaviour
     [SerializeField]
     private B_Play playButton;
 
+    [SerializeField]
+    private GameObject tileCrocodile;
+    [SerializeField]
+    private GameObject tileKillerWhale;
+    [SerializeField]
+    private GameObject tileDelphin;
+    [SerializeField]
+    private GameObject tileCharacter1;
+
+
 
     private void initPlayers()
     {
-        Player player1 = new Player("Player1", COLOR.BLUE);
-        Player player2 = new Player("Player2", COLOR.RED);
+        KillerWhale wale1 = new KillerWhale();
+        KillerWhale wale2 = new KillerWhale();
+        Crocodile crocodile1 = new Crocodile();
+        Dolphin dolphin = new Dolphin();
 
-        Character character1 = new Character(1, CHARACTER_TYPE.ELECTRICA);
-        Character character2 = new Character(1, CHARACTER_TYPE.ELECTRICA);
-        Character character3 = new Character(1, CHARACTER_TYPE.ELECTRICA);
-        Character character4 = new Character(1, CHARACTER_TYPE.ELECTRICA);
-        Character character5 = new Character(1, CHARACTER_TYPE.ELECTRICA);
-
-        Character character6 = new Character(1, CHARACTER_TYPE.ELECTRICA);
-        Character character7 = new Character(1, CHARACTER_TYPE.ELECTRICA);
-        Character character8 = new Character(1, CHARACTER_TYPE.ELECTRICA);
-        Character character9 = new Character(1, CHARACTER_TYPE.ELECTRICA);
-        Character character10 = new Character(1, CHARACTER_TYPE.ELECTRICA);
-
-        player1.setCharacter(character1);
-        player1.setCharacter(character2);
-        player1.setCharacter(character3);
-        player1.setCharacter(character4);
-        player1.setCharacter(character5);
-
-        player2.setCharacter(character6);
-        player2.setCharacter(character7);
-        player2.setCharacter(character8);
-        player2.setCharacter(character9);
-        player2.setCharacter(character10);
-
-        this.players.Add(player1);
-        this.players.Add(player2);
+        this.setCreature(wale1);
+        this.setCreature(wale2);
+        this.setCreature(crocodile1);
+        this.setCreature(dolphin);
     }
 
     void Start()
@@ -56,11 +54,24 @@ public class GameController : MonoBehaviour
         map.init();
         this.initCameras();
         this.initPlayers();
+        this.initTurn();
         this.defineCharactersPositions();
+        this.defineCreaturesPositions();
 
         selectButton.Select += Select;
         exitButton.Exit += Exit;
         playButton.Play += Play;
+    }
+
+    private void initTurn()
+    {
+        this.turnPlayer = this.players[0];
+        this.countMovements = 3;
+    }
+
+    public void setCreature(Creature c)
+    {
+        this.creatures.Add(c);
     }
 
     private void initCameras()
@@ -89,9 +100,50 @@ public class GameController : MonoBehaviour
         return list;
     }
 
+    public void defineCreaturesPositions()
+    {
+        List<Cell> seaCells = map.getSeaCells();
+
+        foreach (Creature creature in creatures)
+        {
+            List<Cell> freeCells = new List<Cell>();
+            foreach (Cell seaC in seaCells)
+            {
+                if (seaC.isEmpty())
+                {
+                    freeCells.Add(seaC);
+                }
+            }
+
+            if (freeCells.Count > 0)
+            {
+                int randomIndex = Random.Range(0, freeCells.Count);
+                Cell cell = freeCells[randomIndex];
+                cell.setItem(creature);
+                cell.setImage(this.createCreatureImage(cell, creature));
+                creature.actualCell = cell;
+            }
+
+        }
+    }
+
+    private GameObject createCreatureImage(Cell cell, Creature creature) {
+        if(creature is KillerWhale)
+        {
+            return Instantiate<GameObject>(tileKillerWhale, cell.gridCell.transform.position, Quaternion.identity);
+        }
+        else if(creature is Crocodile)
+        {
+            return Instantiate<GameObject>(tileCrocodile, cell.gridCell.transform.position, Quaternion.identity);
+        }
+        else
+        {
+            return Instantiate<GameObject>(tileDelphin, cell.gridCell.transform.position, Quaternion.identity);
+        }
+    }
+
     public void defineCharactersPositions()
     {
-        MapGenerator map = transform.GetComponent<MapGenerator>();
         List<Character> allCharacters = this.getAllCharacters();
         List<Cell> centerCells = map.getCenterIsland();
 
@@ -109,14 +161,12 @@ public class GameController : MonoBehaviour
             if(freeCells.Count > 0)
             {
                 int randomIndex = Random.Range(0, freeCells.Count);
-                freeCells[randomIndex].setItem(c);
-                c.actualCell = freeCells[randomIndex];
-                map.changeColorPlayer(c.actualCell);
+                Cell cell = freeCells[randomIndex];
+                cell.setItem(c);
+                c.actualCell = cell;
+                cell.setImage(Instantiate(tileCharacter1, cell.gridCell.transform.position, Quaternion.identity));
             }
-
         }
-
-        
     }
 
     public void sinkRandomEarthenware() {
@@ -129,11 +179,17 @@ public class GameController : MonoBehaviour
             int randomCellIndex = Random.Range(0, freeDirt.Count);
             freeDirt[randomCellIndex].type = CELL_TYPE.WATER;
 
-        }else
+        }
+        else
         {
             int randomCellIndex = Random.Range(0, freeSands.Count);
             freeSands[randomCellIndex].type = CELL_TYPE.WATER;
         }
+    }
+
+    public void setPlayer(Player p)
+    {
+        this.players.Add(p);
     }
 
     private void activateCamera(int id)

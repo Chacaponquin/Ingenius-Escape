@@ -50,12 +50,10 @@ public class MapGenerator : MonoBehaviour
         Cell cell4 = this.grid[sizeGrid - 2][sizeGrid - 2];
         cell4.gridCell.GetComponent<SpriteRenderer>().sprite = tileSand;
 
-
-
-        /*defineColorIsland(cell1.gridCell);
-        defineColorIsland(cell2.gridCell);
-        defineColorIsland(cell3.gridCell);
-        defineColorIsland(cell4.gridCell);*/
+        cell1.type = CELL_TYPE.ISLAND;
+        cell2.type = CELL_TYPE.ISLAND;
+        cell3.type = CELL_TYPE.ISLAND;
+        cell4.type = CELL_TYPE.ISLAND;
     }
 
     private void initGrid()
@@ -73,7 +71,7 @@ public class MapGenerator : MonoBehaviour
                 GameObject test = Instantiate(boxTest, position, Quaternion.identity);
                 test.GetComponent<SpriteRenderer>().sprite = tileWater;
 
-                Cell newCell = new Cell(test, CELL_TYPE.WATER, this);
+                Cell newCell = new Cell(test, CELL_TYPE.WATER, this, j, i);
 
                 newRow.Add(newCell);
 
@@ -101,9 +99,8 @@ public class MapGenerator : MonoBehaviour
             for (int i = indexCenter - islandSpace - 1; i < indexCenter + islandSpace; i++)
             {
                 Cell cell = this.grid[j][i];
-                cell.type = CELL_TYPE.SAND;
-                //this.defineColorIsland(cell.gridCell);
-                cell.gridCell.GetComponent<SpriteRenderer>().sprite = tileSand;
+                cell.type = this.randomCellType();
+                this.paintCell(cell);
             }
 
             islandSpace--;
@@ -116,21 +113,42 @@ public class MapGenerator : MonoBehaviour
             for (int i = indexCenter - islandSpace - 1; i < indexCenter + islandSpace; i++)
             {
                 Cell cell = this.grid[j][i];
-                cell.type = CELL_TYPE.DIRT;
-                //this.defineColorIsland(cell.gridCell);
-                cell.gridCell.GetComponent<SpriteRenderer>().sprite = tileSand;
+                cell.type = this.randomCellType();
+                this.paintCell(cell);
             }
 
             islandSpace--;
         }
 
         Cell extremeBottom = this.grid[indexCenter + CENTER_ISLAND_SIZE - 1][indexCenter - 1];
-        //this.defineColorIsland(cell.gridCell);
-        extremeBottom.gridCell.GetComponent<SpriteRenderer>().sprite = tileSand;
+        extremeBottom.type = this.randomCellType();
+        this.paintCell(extremeBottom);
 
         Cell extremeTop = this.grid[indexCenter - CENTER_ISLAND_SIZE - 1][indexCenter - 1];
-        //this.defineColorIsland(cell.gridCell);
-        extremeTop.gridCell.GetComponent<SpriteRenderer>().sprite = tileSand;
+        extremeTop.type = this.randomCellType();
+        this.paintCell(extremeTop);
+    }
+
+    private void paintCell(Cell cell)
+    {
+        if(cell.type == CELL_TYPE.DIRT)
+        {
+            cell.gridCell.GetComponent<SpriteRenderer>().sprite = tileDirt;
+        }
+        else if(cell.type == CELL_TYPE.SAND)
+        {
+            cell.gridCell.GetComponent<SpriteRenderer>().sprite = tileSand;
+        }
+    }
+
+    private CELL_TYPE randomCellType()
+    {
+        List<CELL_TYPE> list = new List<CELL_TYPE>();
+        list.Add(CELL_TYPE.DIRT);
+        list.Add(CELL_TYPE.SAND);
+
+        int randomIndex = Random.Range(0, list.Count);
+        return list[randomIndex];
     }
 
     public Cell GetCellCenter()
@@ -147,28 +165,20 @@ public class MapGenerator : MonoBehaviour
         }
     }
 
-    public void changeColorPlayer(Cell cell)
-    {
-        if (cell.gridCell.TryGetComponent<SpriteRenderer>(out SpriteRenderer component))
-        {
-            component.color = Color.red;
-        }
-    }
-
     private void createBottomRightIsland()
     {
         for (int i = this.grid[0].Count - ISLAND_SIZE; i < this.grid[0].Count; i++)
         {
             Cell cell = this.grid[sizeGrid - 1][i];
-            //this.defineColorIsland(cell.gridCell);
             cell.gridCell.GetComponent<SpriteRenderer>().sprite = tileSand;
+            cell.type = CELL_TYPE.ISLAND;
         }
 
         for (int i = this.grid[0].Count - ISLAND_SIZE; i < this.grid[0].Count; i++)
         {
             Cell cell = this.grid[i][sizeGrid - 1];
-            //this.defineColorIsland(cell.gridCell);
             cell.gridCell.GetComponent<SpriteRenderer>().sprite = tileSand;
+            cell.type = CELL_TYPE.ISLAND;
         }
     }
 
@@ -177,15 +187,15 @@ public class MapGenerator : MonoBehaviour
         for (int i = 0; i < ISLAND_SIZE; i++)
         {
             Cell cell = this.grid[sizeGrid - 1][i];
-            //this.defineColorIsland(cell.gridCell);
             cell.gridCell.GetComponent<SpriteRenderer>().sprite = tileSand;
+            cell.type = CELL_TYPE.ISLAND;
         }
 
         for (int i = 0; i < ISLAND_SIZE; i++)
         {
             Cell cell = this.grid[i][sizeGrid - 1];
-            //this.defineColorIsland(cell.gridCell);
             cell.gridCell.GetComponent<SpriteRenderer>().sprite = tileSand;
+            cell.type = CELL_TYPE.ISLAND;
         }
     }
 
@@ -194,15 +204,16 @@ public class MapGenerator : MonoBehaviour
         for (int i = this.grid[0].Count - ISLAND_SIZE; i < this.grid[0].Count; i++)
         {
             Cell cell = this.grid[0][i];
-            //this.defineColorIsland(cell.gridCell);
             cell.gridCell.GetComponent<SpriteRenderer>().sprite = tileSand;
+            cell.type = CELL_TYPE.ISLAND;
+
         }
 
         for (int i = this.grid[0].Count - ISLAND_SIZE; i < this.grid[0].Count; i++)
         {
             Cell cell = this.grid[i][0];
-            //this.defineColorIsland(cell.gridCell);
             cell.gridCell.GetComponent<SpriteRenderer>().sprite = tileSand;
+            cell.type = CELL_TYPE.ISLAND;
         }
     }
 
@@ -211,15 +222,16 @@ public class MapGenerator : MonoBehaviour
         for (int i = 0; i < ISLAND_SIZE; i++)
         {
             Cell cell = this.grid[0][i];
-            //this.defineColorIsland(cell.gridCell);
             cell.gridCell.GetComponent<SpriteRenderer>().sprite = tileSand;
+            cell.type = CELL_TYPE.ISLAND;
+
         }
 
         for (int i = 0; i < ISLAND_SIZE; i++)
         {
             Cell cell = this.grid[i][0];
-            //this.defineColorIsland(cell.gridCell);
             cell.gridCell.GetComponent<SpriteRenderer>().sprite = tileSand;
+            cell.type = CELL_TYPE.ISLAND;
         }
     }
 
@@ -262,7 +274,7 @@ public class MapGenerator : MonoBehaviour
     public Cell getCell(int x, int y) {
         try
         {
-            return this.grid[x][y];
+            return this.grid[y][x];
         }
          catch (System.Exception)
         {
@@ -288,24 +300,38 @@ public class MapGenerator : MonoBehaviour
         return cells;
     }
 
-    public (int, int) findCellCoords(Cell cell)
+    public List<Cell> getSeaCells()
     {
-        int x = -1;
-        int y = -1;
+        List<Cell> cells = new List<Cell>();
 
-        bool stop = false;
-
-        for(int i = 0; i < this.grid.Count && !stop; i++)
+        foreach (List<Cell> cellRow in this.grid)
         {
-            int found = this.grid[i].IndexOf(cell);
-            if(found != -1)
+            foreach (Cell c in cellRow)
             {
-                stop = true;
-                x = i;
-                y = found;
+                if (!c.isLand() && c.type != CELL_TYPE.ISLAND)
+                {
+                    cells.Add(c);
+                }
             }
         }
 
-        return (x, y);
+        return cells;
+    }
+
+    public Cell findCellByObject(GameObject obj)
+    {
+        Cell found = null;
+
+        for (int i = 0; i < this.grid.Count && found == null; i++) { 
+            for(int j = 0; j < this.grid[i].Count && found == null; j++)
+            {
+                if(this.grid[i][j].gridCell.gameObject == obj)
+                {
+                    found = this.grid[i][j];
+                }
+            }
+        }
+
+        return found;
     }
 }

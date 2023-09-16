@@ -27,12 +27,23 @@ public class Cell
     public GameObject gridCell;
     public CELL_TYPE type;
     public MapGenerator map;
-    private List<CellItem> items = new List<CellItem>();
+    public CellItem item = null;
+    public GameObject image = null;
+    public int x;
+    public int y;
 
-    public Cell(GameObject cell, CELL_TYPE type, MapGenerator map) {
+    public Cell(GameObject cell, CELL_TYPE type, MapGenerator map, int x, int y) {
         this.gridCell = cell;
         this.type = type;
         this.map = map;
+
+        this.x = x;
+        this.y = y;
+    }
+
+    public void setImage(GameObject g)
+    {
+        this.image=g;
     }
 
     public bool isLand()
@@ -40,54 +51,40 @@ public class Cell
         return this.type == CELL_TYPE.SAND || this.type == CELL_TYPE.DIRT;
     }
 
-    public bool includeBoat()
+    public void charactersToWater()
     {
-        bool found = false;
-
-        for(int i = 0; i < this.items.Count && !found; i++) {
-            if(this.items[i] is Boat)
-            {
-                found = true;
-            }
+        if(item is Boat)
+        {
+            this.item = null;
         }
-
-        return found;
     }
 
-    public List<Boat> availableBoats() {
-        List<Boat> list = new List<Boat>();
-
-        foreach(CellItem c in this.items)
+    public void deleteCharacters()
+    {
+        if (this.item is Character)
         {
-            if(c is Boat)
-            {
-                Boat boat = (Boat)c;
-                if (boat.available())
-                {
-                    list.Add(boat);
-                }
-            }
+            this.item = null;
         }
+    }
 
-        return list;
-
+    public bool includeBoat()
+    {
+        return this.item is Boat;
     }
 
     public bool isEmpty()
     {
-        return this.items.Count == 0;
+        return this.item == null;
     }
 
     public void setItem(CellItem c)
     {
-        this.items.Add(c);
+        this.item = c;
     }
 
     public bool isAdjacent(Cell cell)
     {
         bool adjacent = false;
-
-        (int x, int y) = this.map.findCellCoords(this);
 
         List<CheckCoord> check = new List<CheckCoord>();
         // vertical
@@ -106,12 +103,12 @@ public class Cell
         check.Add(new CheckCoord(1, -1));
         check.Add(new CheckCoord(-1, 1));
 
-        for(int i =0; i < check.Count && !adjacent; i++)
+        for(int i = 0; i < check.Count && !adjacent; i++)
         {
             CheckCoord coord = check[i];
-            Cell foundCell = this.map.getCell(x + coord.x, y + coord.y);
+            Cell foundCell = this.map.getCell(this.x + coord.x, this.y + coord.y);
 
-            if(foundCell != null)
+            if(foundCell != null &&  foundCell == cell)
             {
                 adjacent = true;
             }

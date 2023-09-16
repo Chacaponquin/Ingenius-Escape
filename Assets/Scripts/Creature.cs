@@ -2,25 +2,49 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-enum CREATURE_TYPE
+public abstract class Creature: CellItem
 {
-    DOLPHIN,
-    KILLER_WHALE,
-}
-
-public class Creature : MonoBehaviour
-{
-    private CREATURE_TYPE type;
-
-    // Start is called before the first frame update
-    void Start()
+    public override bool canMove(Cell cell)
     {
-        
+        if (this.actualCell.isAdjacent(cell))
+        {
+            if (cell.type == CELL_TYPE.WATER)
+            {
+                return true;
+            }
+
+            return false;
+        }
+        else
+        {
+            return false;
+        }
     }
 
-    // Update is called once per frame
-    void Update()
+    public override bool isPlayerOwner(Player player)
     {
-        
+        return true;
+    }
+
+}
+
+public class KillerWhale: Creature {
+    public override void move(Cell cell)
+    {
+        cell.charactersToWater();
+    }
+}
+
+public class Crocodile: Creature {
+    public override void move(Cell cell)
+    {
+        cell.deleteCharacters();
+    }
+}
+
+public class Dolphin: Creature
+{
+    public override void move(Cell cell)
+    {
     }
 }

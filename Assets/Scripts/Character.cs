@@ -16,7 +16,6 @@ public enum CHARACTER_TYPE
 public class Character: CellItem
 {
     public int id;
-    public Cell actualCell;
     public CHARACTER_TYPE type;
 
     public Character(int id, CHARACTER_TYPE type)
@@ -25,28 +24,32 @@ public class Character: CellItem
         this.type = type;
     }
 
-    public bool canMove(Cell cell)
+    public override bool isPlayerOwner(Player player)
     {
-        if (actualCell.isAdjacent(cell))
-        {
-            if (actualCell.isLand() && cell.type == CELL_TYPE.WATER)
-            {
-                return false;
-            }
+        return player.includesCharacter(this);
+    }
 
+    public override void move(Cell cell)
+    {
+        cell.setItem(this);
+        this.actualCell = cell;
+    }
 
-            if (cell.type == CELL_TYPE.WATER && cell.includeBoat())
-            {
-                List<Boat> allBoats = cell.availableBoats();
-                return !(allBoats.Count == 0);
-            }
-
-            return true;
-        }
-        else
+    public override bool canMove(Cell cell)
+    {
+        if (actualCell.isLand() && cell.type == CELL_TYPE.WATER)
         {
             return false;
-        }        
+        }
+
+
+        if (cell.type == CELL_TYPE.WATER && cell.includeBoat())
+        {
+            Boat boat = (Boat)cell.item;
+            return boat.available();
+        }
+
+        return true; 
     }
 }
 

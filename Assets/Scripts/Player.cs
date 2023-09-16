@@ -22,4 +22,9 @@ public class Player
     {
         this.characters.Add(c);
     }
+
+    public bool includesCharacter(Character c)
+    {
+        return this.characters.IndexOf(c) != -1;
+    }
 }
