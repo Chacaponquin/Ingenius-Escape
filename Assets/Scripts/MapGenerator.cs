@@ -8,6 +8,11 @@ public class MapGenerator : MonoBehaviour
     public int sizeBox;
     public List<List<Cell>> grid;
     public GameObject boxTest;
+    public Sprite tileSand;
+    public Sprite tileDirt;
+    public Sprite tileWater;
+
+    private bool created = false;
 
     private const int ISLAND_SIZE = 3;
     private const int CENTER_ISLAND_SIZE = 4;
@@ -19,9 +24,14 @@ public class MapGenerator : MonoBehaviour
 
     public void init()
     {
-        this.initGrid();
-        this.createIsland();
-        this.createCenterIsland();
+        if (!this.created)
+        {
+            this.initGrid();
+            this.createIsland();
+            this.createCenterIsland();
+
+            this.created = true;
+        }
     }
 
     private void createIsland()
@@ -31,10 +41,21 @@ public class MapGenerator : MonoBehaviour
         this.createBottomLeftIsland();
         this.createBottomRightIsland();
 
-        defineColorIsland(this.grid[1][1].gridCell);
-        defineColorIsland(this.grid[sizeGrid - 2][1].gridCell);
-        defineColorIsland(this.grid[1][sizeGrid - 2].gridCell);
-        defineColorIsland(this.grid[sizeGrid - 2][sizeGrid - 2].gridCell);
+        Cell cell1 = this.grid[1][1];
+        cell1.gridCell.GetComponent<SpriteRenderer>().sprite = tileSand;
+        Cell cell2 = this.grid[sizeGrid - 2][1];
+        cell2.gridCell.GetComponent<SpriteRenderer>().sprite = tileSand;
+        Cell cell3 = this.grid[1][sizeGrid - 2];
+        cell3.gridCell.GetComponent<SpriteRenderer>().sprite = tileSand;
+        Cell cell4 = this.grid[sizeGrid - 2][sizeGrid - 2];
+        cell4.gridCell.GetComponent<SpriteRenderer>().sprite = tileSand;
+
+
+
+        /*defineColorIsland(cell1.gridCell);
+        defineColorIsland(cell2.gridCell);
+        defineColorIsland(cell3.gridCell);
+        defineColorIsland(cell4.gridCell);*/
     }
 
     private void initGrid()
@@ -50,6 +71,7 @@ public class MapGenerator : MonoBehaviour
             {
                 Vector3 position = new Vector3(startPositionX, startPositionY, 0f);
                 GameObject test = Instantiate(boxTest, position, Quaternion.identity);
+                test.GetComponent<SpriteRenderer>().sprite = tileWater;
 
                 Cell newCell = new Cell(test, CELL_TYPE.WATER, this);
 
@@ -72,7 +94,6 @@ public class MapGenerator : MonoBehaviour
     private void createCenterIsland()
     {
         int islandSpace = CENTER_ISLAND_SIZE;
-
         int indexCenter = this.GetCenterIndex();
 
         for (int j = indexCenter - 1; islandSpace >= 1; j++)
@@ -80,7 +101,9 @@ public class MapGenerator : MonoBehaviour
             for (int i = indexCenter - islandSpace - 1; i < indexCenter + islandSpace; i++)
             {
                 Cell cell = this.grid[j][i];
-                this.defineColorIsland(cell.gridCell);
+                cell.type = CELL_TYPE.SAND;
+                //this.defineColorIsland(cell.gridCell);
+                cell.gridCell.GetComponent<SpriteRenderer>().sprite = tileSand;
             }
 
             islandSpace--;
@@ -93,17 +116,21 @@ public class MapGenerator : MonoBehaviour
             for (int i = indexCenter - islandSpace - 1; i < indexCenter + islandSpace; i++)
             {
                 Cell cell = this.grid[j][i];
-                this.defineColorIsland(cell.gridCell);
+                cell.type = CELL_TYPE.DIRT;
+                //this.defineColorIsland(cell.gridCell);
+                cell.gridCell.GetComponent<SpriteRenderer>().sprite = tileSand;
             }
 
             islandSpace--;
         }
 
         Cell extremeBottom = this.grid[indexCenter + CENTER_ISLAND_SIZE - 1][indexCenter - 1];
-        this.defineColorIsland(extremeBottom.gridCell);
+        //this.defineColorIsland(cell.gridCell);
+        extremeBottom.gridCell.GetComponent<SpriteRenderer>().sprite = tileSand;
 
         Cell extremeTop = this.grid[indexCenter - CENTER_ISLAND_SIZE - 1][indexCenter - 1];
-        this.defineColorIsland(extremeTop.gridCell);
+        //this.defineColorIsland(cell.gridCell);
+        extremeTop.gridCell.GetComponent<SpriteRenderer>().sprite = tileSand;
     }
 
     public Cell GetCellCenter()
@@ -112,11 +139,19 @@ public class MapGenerator : MonoBehaviour
         return this.grid[indexCenter][indexCenter];
     }
 
-    private void defineColorIsland(GameObject cell)
+    public void defineColorIsland(GameObject cell)
     {
         if (cell.TryGetComponent<SpriteRenderer>(out SpriteRenderer component))
         {
             component.color = Color.blue;
+        }
+    }
+
+    public void changeColorPlayer(Cell cell)
+    {
+        if (cell.gridCell.TryGetComponent<SpriteRenderer>(out SpriteRenderer component))
+        {
+            component.color = Color.red;
         }
     }
 
@@ -125,13 +160,15 @@ public class MapGenerator : MonoBehaviour
         for (int i = this.grid[0].Count - ISLAND_SIZE; i < this.grid[0].Count; i++)
         {
             Cell cell = this.grid[sizeGrid - 1][i];
-            this.defineColorIsland(cell.gridCell);
+            //this.defineColorIsland(cell.gridCell);
+            cell.gridCell.GetComponent<SpriteRenderer>().sprite = tileSand;
         }
 
         for (int i = this.grid[0].Count - ISLAND_SIZE; i < this.grid[0].Count; i++)
         {
             Cell cell = this.grid[i][sizeGrid - 1];
-            this.defineColorIsland(cell.gridCell);
+            //this.defineColorIsland(cell.gridCell);
+            cell.gridCell.GetComponent<SpriteRenderer>().sprite = tileSand;
         }
     }
 
@@ -140,13 +177,15 @@ public class MapGenerator : MonoBehaviour
         for (int i = 0; i < ISLAND_SIZE; i++)
         {
             Cell cell = this.grid[sizeGrid - 1][i];
-            this.defineColorIsland(cell.gridCell);
+            //this.defineColorIsland(cell.gridCell);
+            cell.gridCell.GetComponent<SpriteRenderer>().sprite = tileSand;
         }
 
         for (int i = 0; i < ISLAND_SIZE; i++)
         {
             Cell cell = this.grid[i][sizeGrid - 1];
-            this.defineColorIsland(cell.gridCell);
+            //this.defineColorIsland(cell.gridCell);
+            cell.gridCell.GetComponent<SpriteRenderer>().sprite = tileSand;
         }
     }
 
@@ -155,13 +194,15 @@ public class MapGenerator : MonoBehaviour
         for (int i = this.grid[0].Count - ISLAND_SIZE; i < this.grid[0].Count; i++)
         {
             Cell cell = this.grid[0][i];
-            this.defineColorIsland(cell.gridCell);
+            //this.defineColorIsland(cell.gridCell);
+            cell.gridCell.GetComponent<SpriteRenderer>().sprite = tileSand;
         }
 
         for (int i = this.grid[0].Count - ISLAND_SIZE; i < this.grid[0].Count; i++)
         {
             Cell cell = this.grid[i][0];
-            this.defineColorIsland(cell.gridCell);
+            //this.defineColorIsland(cell.gridCell);
+            cell.gridCell.GetComponent<SpriteRenderer>().sprite = tileSand;
         }
     }
 
@@ -170,13 +211,15 @@ public class MapGenerator : MonoBehaviour
         for (int i = 0; i < ISLAND_SIZE; i++)
         {
             Cell cell = this.grid[0][i];
-            this.defineColorIsland(cell.gridCell);
+            //this.defineColorIsland(cell.gridCell);
+            cell.gridCell.GetComponent<SpriteRenderer>().sprite = tileSand;
         }
 
         for (int i = 0; i < ISLAND_SIZE; i++)
         {
             Cell cell = this.grid[i][0];
-            this.defineColorIsland(cell.gridCell);
+            //this.defineColorIsland(cell.gridCell);
+            cell.gridCell.GetComponent<SpriteRenderer>().sprite = tileSand;
         }
     }
 

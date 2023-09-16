@@ -19,6 +19,12 @@ public class Character: CellItem
     public Cell actualCell;
     public CHARACTER_TYPE type;
 
+    public Character(int id, CHARACTER_TYPE type)
+    {
+        this.id = id;
+        this.type = type;
+    }
+
     public bool canMove(Cell cell)
     {
         if (actualCell.isAdjacent(cell))

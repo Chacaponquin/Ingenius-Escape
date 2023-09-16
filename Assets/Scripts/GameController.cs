@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class GameController : MonoBehaviour
 {
+    private MapGenerator map;
     private List<Player> players = new List<Player>();
     private Player turnPlayer;
     private List<GameCamera> cameras;
@@ -20,12 +21,39 @@ public class GameController : MonoBehaviour
         Player player1 = new Player("Player1", COLOR.BLUE);
         Player player2 = new Player("Player2", COLOR.RED);
 
+        Character character1 = new Character(1, CHARACTER_TYPE.ELECTRICA);
+        Character character2 = new Character(1, CHARACTER_TYPE.ELECTRICA);
+        Character character3 = new Character(1, CHARACTER_TYPE.ELECTRICA);
+        Character character4 = new Character(1, CHARACTER_TYPE.ELECTRICA);
+        Character character5 = new Character(1, CHARACTER_TYPE.ELECTRICA);
+
+        Character character6 = new Character(1, CHARACTER_TYPE.ELECTRICA);
+        Character character7 = new Character(1, CHARACTER_TYPE.ELECTRICA);
+        Character character8 = new Character(1, CHARACTER_TYPE.ELECTRICA);
+        Character character9 = new Character(1, CHARACTER_TYPE.ELECTRICA);
+        Character character10 = new Character(1, CHARACTER_TYPE.ELECTRICA);
+
+        player1.setCharacter(character1);
+        player1.setCharacter(character2);
+        player1.setCharacter(character3);
+        player1.setCharacter(character4);
+        player1.setCharacter(character5);
+
+        player2.setCharacter(character6);
+        player2.setCharacter(character7);
+        player2.setCharacter(character8);
+        player2.setCharacter(character9);
+        player2.setCharacter(character10);
+
         this.players.Add(player1);
         this.players.Add(player2);
     }
 
     void Start()
     {
+        this.map = transform.GetComponent<MapGenerator>();
+
+        map.init();
         this.initCameras();
         this.initPlayers();
         this.defineCharactersPositions();
@@ -82,6 +110,8 @@ public class GameController : MonoBehaviour
             {
                 int randomIndex = Random.Range(0, freeCells.Count);
                 freeCells[randomIndex].setItem(c);
+                c.actualCell = freeCells[randomIndex];
+                map.changeColorPlayer(c.actualCell);
             }
 
         }

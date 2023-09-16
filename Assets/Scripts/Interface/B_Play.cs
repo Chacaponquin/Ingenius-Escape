@@ -19,7 +19,6 @@ public class B_Play : MonoBehaviour
     }
     private void OnMouseDown()
     {
-        print("Que quieres que te diga, estoy tocando play");
         Play();
     }
 }
