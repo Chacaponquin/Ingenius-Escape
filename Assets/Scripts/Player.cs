@@ -27,4 +27,40 @@ public class Player
     {
         return this.characters.IndexOf(c) != -1;
     }
+
+    public List<Character> mechanicsInBoats()
+    {
+        List<Character> returnCharacters = new List<Character>();
+
+        foreach(Character character in this.characters)
+        {
+            if(character.actualCell != null)
+            {
+                if(character.actualCell.type == CELL_TYPE.WATER && character.actualCell.item is Boat)
+                {
+                    returnCharacters.Add(character);
+                }
+            }
+        }
+
+        return returnCharacters;
+    }
+
+    public List<Character> hidraulicsInWater()
+    {
+        List<Character> returnCharacters = new List<Character>();
+
+        foreach (Character character in this.characters)
+        {
+            if (character.actualCell != null)
+            {
+                if (character.actualCell.type == CELL_TYPE.WATER && character.actualCell.item == character)
+                {
+                    returnCharacters.Add(character);
+                }
+            }
+        }
+
+        return returnCharacters;
+    }
 }

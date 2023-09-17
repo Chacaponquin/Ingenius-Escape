@@ -139,6 +139,10 @@ public class MapGenerator : MonoBehaviour
         {
             cell.gridCell.GetComponent<SpriteRenderer>().sprite = tileSand;
         }
+        else if(cell.type == CELL_TYPE.WATER)
+        {
+            cell.gridCell.GetComponent<SpriteRenderer>().sprite = tileWater;
+        }
     }
 
     private CELL_TYPE randomCellType()
@@ -224,7 +228,6 @@ public class MapGenerator : MonoBehaviour
             Cell cell = this.grid[0][i];
             cell.gridCell.GetComponent<SpriteRenderer>().sprite = tileSand;
             cell.type = CELL_TYPE.ISLAND;
-
         }
 
         for (int i = 0; i < ISLAND_SIZE; i++)
@@ -235,7 +238,7 @@ public class MapGenerator : MonoBehaviour
         }
     }
 
-    public List<Cell> freeCellSands()
+    public List<Cell> cellsSands()
     {
         List<Cell> free = new List<Cell>();
 
@@ -253,7 +256,7 @@ public class MapGenerator : MonoBehaviour
         return free;
     }
 
-    public List<Cell> freeCellDirt()
+    public List<Cell> cellsDirt()
     {
         List<Cell> free = new List<Cell>();
 
@@ -333,5 +336,27 @@ public class MapGenerator : MonoBehaviour
         }
 
         return found;
+    }
+
+    public void sinkRandomEarthenware()
+    {
+        List<Cell> freeSands = this.cellsSands();
+        List<Cell> freeDirt = this.cellsDirt();
+
+        if (freeSands.Count == 0)
+        {
+            int randomCellIndex = Random.Range(0, freeDirt.Count);
+            Cell cell = freeDirt[randomCellIndex];
+            cell.type = CELL_TYPE.WATER;
+            this.paintCell(cell);
+
+        }
+        else
+        {
+            int randomCellIndex = Random.Range(0, freeSands.Count);
+            Cell cell = freeSands[randomCellIndex];
+            cell.type = CELL_TYPE.WATER;
+            this.paintCell(cell);
+        }
     }
 }

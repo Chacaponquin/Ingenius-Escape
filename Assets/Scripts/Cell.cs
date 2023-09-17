@@ -41,51 +41,8 @@ public class Cell
         this.y = y;
     }
 
-    public void setImage(GameObject g)
+    private List<CheckCoord> getPossibleCoords()
     {
-        this.image=g;
-    }
-
-    public bool isLand()
-    {
-        return this.type == CELL_TYPE.SAND || this.type == CELL_TYPE.DIRT;
-    }
-
-    public void charactersToWater()
-    {
-        if(item is Boat)
-        {
-            this.item = null;
-        }
-    }
-
-    public void deleteCharacters()
-    {
-        if (this.item is Character)
-        {
-            this.item = null;
-        }
-    }
-
-    public bool includeBoat()
-    {
-        return this.item is Boat;
-    }
-
-    public bool isEmpty()
-    {
-        return this.item == null;
-    }
-
-    public void setItem(CellItem c)
-    {
-        this.item = c;
-    }
-
-    public bool isAdjacent(Cell cell)
-    {
-        bool adjacent = false;
-
         List<CheckCoord> check = new List<CheckCoord>();
         // vertical
         check.Add(new CheckCoord(0, -1));
@@ -103,12 +60,130 @@ public class Cell
         check.Add(new CheckCoord(1, -1));
         check.Add(new CheckCoord(-1, 1));
 
+        return check;
+    }
+
+    public void setImage(GameObject g)
+    {
+        this.image=g;
+    }
+
+    public void destroyAll()
+    {
+        if(this.item is Character)
+        {
+            ((Character)this.item).destroyed = true;
+        }
+        else if(this.item is Boat)
+        {
+            ((Boat)this.item).destroy();
+        }
+
+        if(this.image != null)
+        {
+            this.image.SetActive(false);
+            this.image = null;
+        }
+
+        this.item = null;
+    }
+
+    public bool isLand()
+    {
+        return this.type == CELL_TYPE.SAND || this.type == CELL_TYPE.DIRT;
+    }
+
+    public void destroyBoats()
+    {
+        if(item is Boat)
+        {
+            ((Boat)this.item).destroy();
+            this.item = null;
+
+            if(this.image != null)
+            {
+                this.image.SetActive(false);
+                this.image = null;
+            }
+        }
+    }
+
+    public void deleteCharacters()
+    {
+        if (this.item is Character)
+        {
+            ((Character)this.item).disable = true;
+            ((Character)this.item).destroyed = true;
+            this.item = null;
+
+            if (this.image != null)
+            {
+                this.image.SetActive(false);
+                this.image = null;
+            }
+        }
+    }
+
+    public bool includeBoat()
+    {
+        return this.item is Boat;
+    }
+
+    public bool includeAvailableBoat()
+    {
+        if(this.item != null && this.item is Boat)
+        {
+            Boat b = (Boat)this.item;
+            Debug.Log(b.available());
+            return b.available();
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    public bool isEmpty()
+    {
+        return this.item == null;
+    }
+
+    public void setItem(CellItem c)
+    {
+        this.item = c;
+    }
+
+    public List<Cell> getAdjacentCells()
+    {
+        List<CheckCoord> checkCoords = this.getPossibleCoords();
+        List<Cell> returnCells = new List<Cell>();
+
+        foreach(CheckCoord check in checkCoords)
+        {
+            Cell foundCell = this.map.getCell(this.x + check.x, this.y + check.y);
+
+            if(foundCell != null)
+            {
+                returnCells.Add(foundCell);
+            }
+        }
+
+        return returnCells;
+
+    }
+
+    public bool isAdjacent(Cell cell)
+    {
+        bool adjacent = false;
+
+        List<CheckCoord> check = this.getPossibleCoords();
+
         for(int i = 0; i < check.Count && !adjacent; i++)
         {
             CheckCoord coord = check[i];
             Cell foundCell = this.map.getCell(this.x + coord.x, this.y + coord.y);
 
-            if(foundCell != null &&  foundCell == cell)
+            if(foundCell != null && foundCell == cell)
             {
                 adjacent = true;
             }

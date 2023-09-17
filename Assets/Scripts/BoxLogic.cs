@@ -29,13 +29,14 @@ public class BoxLogic : MonoBehaviour
 
         if(found != null)
         {
-            Player turnPlayer = this.gameController.turnPlayer;
+            int turn = this.gameController.turnPlayer;
+            Player turnPlayer = this.gameController.players[turn];
 
             Cell selectedCell = gameController.selectedCell;
 
             if (selectedCell == null)
             {
-                if (!found.isEmpty())
+                if (!found.isEmpty() && !found.item.disable )
                 {
                     bool canControl = found.item.isPlayerOwner(turnPlayer);
 
@@ -53,12 +54,12 @@ public class BoxLogic : MonoBehaviour
                 if (canMove)
                 {
                     selectedCell.item.moveToCell(found);
-                    gameController.selectedCell = null;
-
-                    selectedCell.image.transform.position = found.gridCell.transform.position;
-                    found.image = selectedCell.image;
 
                     print("Movido hacia " + found);
+
+                    gameController.selectedCell = null;
+
+                    this.gameController.decreaseTurnCount();
                 }
             }
         }

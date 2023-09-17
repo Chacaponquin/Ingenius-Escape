@@ -26,12 +26,6 @@ public class FormController : MonoBehaviour
     void Start()
     {
         gameController = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>();
-
-        Player player1 = new Player("Player 1", COLOR.BLUE);
-        Player player2 = new Player("Player 2", COLOR.RED);
-
-        this.gameController.setPlayer(player1);
-        this.gameController.setPlayer(player2);
     }
 
     // Update is called once per frame

@@ -15,12 +15,12 @@ public enum CHARACTER_TYPE
 
 public class Character: CellItem
 {
-    public int id;
     public CHARACTER_TYPE type;
+    public bool isArrival = false;
+    public bool destroyed = false;
 
-    public Character(int id, CHARACTER_TYPE type)
+    public Character(CHARACTER_TYPE type)
     {
-        this.id = id;
         this.type = type;
     }
 
@@ -31,22 +31,19 @@ public class Character: CellItem
 
     public override void move(Cell cell)
     {
-        cell.setItem(this);
-        this.actualCell = cell;
     }
 
     public override bool canMove(Cell cell)
     {
-        if (actualCell.isLand() && cell.type == CELL_TYPE.WATER)
+        if (actualCell.isLand() && cell.type == CELL_TYPE.WATER && !cell.includeAvailableBoat())
         {
             return false;
         }
 
 
-        if (cell.type == CELL_TYPE.WATER && cell.includeBoat())
+        if (actualCell.isLand() && cell.isLand() && !cell.isEmpty())
         {
-            Boat boat = (Boat)cell.item;
-            return boat.available();
+            return false;
         }
 
         return true; 
