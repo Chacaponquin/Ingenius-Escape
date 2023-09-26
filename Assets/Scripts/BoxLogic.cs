@@ -38,12 +38,16 @@ public class BoxLogic : MonoBehaviour
             {
                 if (!found.isEmpty() && !found.item.disable )
                 {
+                    
                     bool canControl = found.item.isPlayerOwner(turnPlayer);
 
                     if (canControl)
                     {
-                        gameController.selectedCell = found;
-                        print("Seleccionada " + found);
+                        if (found.canMoveToAnywhere())
+                        {
+                            gameController.selectedCell = found;
+                            print("Seleccionada " + found);
+                        }
                     }
                 }
             }

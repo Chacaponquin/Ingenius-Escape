@@ -41,7 +41,7 @@ public abstract class CellItem
             cell.image = actualCell.image;
             this.actualCell.setItem(null);
 
-            this.setCell(cell);
+            this.actualCell = cell;
             cell.setItem(this);
 
             this.move(cell);

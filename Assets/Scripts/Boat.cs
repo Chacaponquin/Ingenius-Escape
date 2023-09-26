@@ -22,8 +22,11 @@ public class Boat: CellItem
         {
             character.move(cell);
         }
+    }
 
-
+    public bool includes(Character c)
+    {
+        return this.passengers.IndexOf(c) != -1;
     }
 
     public override bool canMove(Cell cell)
@@ -62,15 +65,15 @@ public class Boat: CellItem
 
     public override bool isPlayerOwner(Player player)
     {
-        bool found = false;
-
         if(this.passengers.Count == 0)
         {
             return false;
-        }else
+        }
+        else
         {
-            int count = 0;
+            bool found = false;
 
+            int count = 0;
             for (int i = 0; i < this.passengers.Count && !found; i++)
             {
                 if (player.includesCharacter(this.passengers[i]))
@@ -79,7 +82,14 @@ public class Boat: CellItem
                 }
             }
 
-            return count >= this.passengers.Count / 2;
+            if(count == 0)
+            {
+                return false;
+            }
+            else
+            {
+                return count >= this.passengers.Count / 2;
+            }
         }
     }
 

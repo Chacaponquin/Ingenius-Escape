@@ -1,9 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class GameController : MonoBehaviour
 {
+    private bool gameOver = false;
     private const int DEFAULT_COUNT_MOVEMENTS = 3;
 
     private MapGenerator map;
@@ -46,12 +48,18 @@ public class GameController : MonoBehaviour
     private GameObject tileChInformatica;
     [SerializeField]
     private GameObject tileChIndustrial;
+    public TMP_Text turn1;
+    public TMP_Text turn2;
 
     [SerializeField]
     private GameObject tileShip;
 
     public List<GameObject> characteres1;
     public List<GameObject> characteres2;
+
+    public GameObject winner1;
+    public GameObject winner2;
+    public GameObject draw;
 
 
     private void initPlayers()
@@ -89,21 +97,73 @@ public class GameController : MonoBehaviour
         this.defineCharactersPositions();
         this.defineCreaturesPositions();
         this.defineBoatsPositions();
+        this.paintTurns();
 
         selectButton.Select += Select;
         exitButton.Exit += Exit;
         playButton.Play += Play;
     }
 
+    private void paintTurns()
+    {
+        if (this.turnPlayer == 0)
+        {
+            turn2.text = "Pasos Restantes:  " + 0;
+            turn1.text = "Pasos Restantes:  " + countMovements;
+        }
+        else
+        {
+            turn2.text = "Pasos Restantes:  " + countMovements;
+            turn1.text = "Pasos Restantes:  " + 0;
+        }
+    }
+
+    private void checkGameIsOver()
+    {
+        if (!this.gameOver)
+        {
+            bool allBoatsDisable = true;
+            for(int i= 0; i < this.boats.Count && allBoatsDisable; i++)
+            {
+                if (!this.boats[i].disable)
+                {
+                    allBoatsDisable = false;
+                }
+            }
+
+            bool allDown = this.map.allDown();
+
+            bool allCharactersDown = true;
+            List<Character> allCharacters = this.getAllCharacters();
+            for(int i =0; i < allCharacters.Count && allCharactersDown; i++)
+            {
+                if (!allCharacters[i].disable && !allCharacters[i].destroyed && !allCharacters[i].isArrival) {
+                    allCharactersDown = false;
+                }
+            }
+
+            this.gameOver = allBoatsDisable || allDown | allCharactersDown;
+        }
+
+        if (this.gameOver)
+        {
+            this.GameOver();
+        }
+    }
+
     public void decreaseTurnCount() {
         this.countMovements--;
 
-        if(this.countMovements == 0)
+        if (this.countMovements == 0)
         {
             this.turnPlayer = this.turnPlayer == 0 ? 1 : 0;
-            this.countMovements = this.calcMovements(this.turnPlayer);
             this.map.sinkRandomEarthenware();
+            this.countMovements = this.calcMovements(this.turnPlayer);
         }
+
+        this.checkGameIsOver();
+
+        this.paintTurns();
     }
 
     public void definePlayerCharacters()
@@ -341,6 +401,25 @@ public class GameController : MonoBehaviour
             }
         }
     }
+
+    private int winner()
+    {
+        int point1 = this.players[0].points();
+        int point2 = this.players[1].points();
+
+        if(point1 > point2)
+        {
+            return 0;
+        }
+        else if(point2 > point1)
+        {
+            return 1;
+        }
+        else
+        {
+            return -1;
+        }
+    }
     private void Select()
     {
         activateCamera(1);
@@ -352,5 +431,26 @@ public class GameController : MonoBehaviour
     private void Play()
     {
         activateCamera(2);
+    }
+    private void GameOver()
+    {
+        activateCamera(3);
+
+        int winner = this.winner();
+
+        if(winner == 0) {
+            this.winner1.SetActive(true);
+        }
+
+        else if(winner == 1)
+        {
+            this.winner2.SetActive(true);
+        }
+
+        else
+        {
+            this.draw.SetActive(true);
+
+        }
     }
 }

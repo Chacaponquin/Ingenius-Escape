@@ -161,6 +161,26 @@ public class MapGenerator : MonoBehaviour
         return this.grid[indexCenter][indexCenter];
     }
 
+    public bool allDown()
+    {
+        bool allDown = true;
+        for(int i =0; i < this.grid.Count && allDown; i++)
+        {
+            List<Cell> row = this.grid[i];
+
+            for(int j =0; j < row.Count && allDown; j++) {
+                Cell cell = this.grid[i][j];
+
+                if(cell.type == CELL_TYPE.DIRT || cell.type == CELL_TYPE.SAND)
+                {
+                    allDown = false;
+                }
+            }
+        }
+
+        return allDown;
+    }
+
     public void defineColorIsland(GameObject cell)
     {
         if (cell.TryGetComponent<SpriteRenderer>(out SpriteRenderer component))

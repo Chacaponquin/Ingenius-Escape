@@ -68,6 +68,24 @@ public class Cell
         this.image=g;
     }
 
+    public bool canMoveToAnywhere()
+    {
+        List<Cell> adjacents = this.getAdjacentCells();
+
+        int count = 0;
+        for(int i = 0; i < adjacents.Count; i++) { 
+            if(this.item != null)
+            {
+                if (!this.item.canMove(adjacents[i]))
+                {
+                    count++;
+                }
+            }
+        }
+
+        return count != adjacents.Count;
+    }
+
     public void destroyAll()
     {
         if(this.item is Character)
@@ -134,7 +152,6 @@ public class Cell
         if(this.item != null && this.item is Boat)
         {
             Boat b = (Boat)this.item;
-            Debug.Log(b.available());
             return b.available();
         }
         else

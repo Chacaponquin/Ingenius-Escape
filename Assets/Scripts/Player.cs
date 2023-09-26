@@ -36,14 +36,38 @@ public class Player
         {
             if(character.actualCell != null)
             {
-                if(character.actualCell.type == CELL_TYPE.WATER && character.actualCell.item is Boat)
+                if (character.type == CHARACTER_TYPE.MECANICA)
                 {
-                    returnCharacters.Add(character);
+                    Debug.Log(character.actualCell);
+                    Debug.Log(character.actualCell.item);
+                    if (character.actualCell.item is Boat)
+                    {
+                        Boat boat = (Boat)character.actualCell.item;
+
+                        if (boat.includes(character)) {
+                            returnCharacters.Add(character); 
+                        }
+                    }
                 }
             }
         }
 
         return returnCharacters;
+    }
+
+    public int points()
+    {
+        int sum = 0;
+
+        foreach (Character c in this.characters)
+        {
+            if (c.isArrival)
+            {
+                sum += c.value();
+            }
+        }
+
+        return sum;
     }
 
     public List<Character> hidraulicsInWater()
@@ -54,7 +78,7 @@ public class Player
         {
             if (character.actualCell != null)
             {
-                if (character.actualCell.type == CELL_TYPE.WATER && character.actualCell.item == character)
+                if (character.actualCell.type == CELL_TYPE.WATER && character.actualCell.item == character && character.type == CHARACTER_TYPE.HIDRAULICA)
                 {
                     returnCharacters.Add(character);
                 }

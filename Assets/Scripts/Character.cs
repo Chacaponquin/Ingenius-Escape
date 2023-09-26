@@ -33,6 +33,37 @@ public class Character: CellItem
     {
     }
 
+    public int value()
+    {
+        if(type == CHARACTER_TYPE.QUIMICA) {
+            return 2;
+        }
+        else if(type == CHARACTER_TYPE.AUTOMATICA)
+        {
+            return 3;
+        }
+        else if (type == CHARACTER_TYPE.INFORMATICA)
+        {
+            return 3;
+        }
+        else if (type == CHARACTER_TYPE.INDUSTRIAL)
+        {
+            return 3;
+        }
+        else if (type == CHARACTER_TYPE.HIDRAULICA)
+        {
+            return 1;
+        }
+        else if (type == CHARACTER_TYPE.ELECTRICA)
+        {
+            return 2;
+        }
+        else
+        {
+            return 1;
+        }
+    }
+
     public override bool canMove(Cell cell)
     {
         if (actualCell.isLand() && cell.type == CELL_TYPE.WATER && !cell.includeAvailableBoat())
@@ -42,6 +73,15 @@ public class Character: CellItem
 
 
         if (actualCell.isLand() && cell.isLand() && !cell.isEmpty())
+        {
+            return false;
+        }
+
+        if(actualCell.type == CELL_TYPE.WATER && !(actualCell.item is Boat) && cell.isLand()) {
+            return false;
+        }
+
+        if(cell.item is Creature)
         {
             return false;
         }

@@ -11,6 +11,11 @@ public abstract class Creature: CellItem
             return false;
         }
 
+        if (cell.isLand())
+        {
+            return false;
+        }
+
 
         return this.canMoveCreature(cell);
     }
@@ -52,6 +57,14 @@ public class Crocodile: Creature {
         if (cell.type == CELL_TYPE.WATER && cell.item is Boat)
         {
             return false;
+        }
+
+        if(cell.type == CELL_TYPE.WATER && cell.item != null)
+        {
+            if(cell.item is Character && ((Character) cell.item).type == CHARACTER_TYPE.QUIMICA)
+            {
+                return false;
+            }
         }
 
         return true;
